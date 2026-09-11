@@ -156,7 +156,7 @@ validateJWTToken()
 const searchClient = algoliasearch('R2HGNQ9JXO', '6c2ecec028bb4e02c35ec302232f26cb');
 
 const search = instantsearch({
-  indexName: 'Ender_Product',
+  indexName: 'gogo_Product',
   searchClient,
 });
 
