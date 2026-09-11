@@ -5,9 +5,8 @@ from products.models import Product
 from products.serializers import ProductSerializer
 
 from . import client
+
 class SearchListView(generics.GenericAPIView):
-
-
 
     def get(self, request, *args, **kwargs):
         user = None
@@ -24,10 +23,10 @@ class SearchListView(generics.GenericAPIView):
 
 
 
+# basically deprecateed
 class OldSearchListView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)

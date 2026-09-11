@@ -1,4 +1,4 @@
-from .models import Product          #this is the 2nd version of inline calidating in serializers.py
+from .models import Product          #this is the 2nd version of inline validating in serializers.py
 
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator

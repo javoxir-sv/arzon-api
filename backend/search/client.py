@@ -16,7 +16,6 @@ def perform_search(query, **kwargs):
     perform_search("hello", tags=["electronics", "cars"], public=True)
     """
 
-
     params = {}
     index = get_index()
     tags = ""

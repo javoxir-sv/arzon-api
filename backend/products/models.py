@@ -1,7 +1,6 @@
 import random
 
 from django.db import models
-
 from django.conf import settings
 from django.db.models import Q
 
@@ -9,6 +8,7 @@ from django.db.models import Q
 User = settings.AUTH_USER_MODEL
 
 
+# product tags 
 TAGS_MODEL_VALUES = ['cars', 'boats', 'milks', 'girls', 'water']
 
 
@@ -17,7 +17,7 @@ class ProductQuerySet(models.QuerySet):
         return self.filter(public=True)
 
     def search(self, query, user=None):
-        lookup = Q(title__icontains=query) | Q(content__icontains=query)
+        lookup = Q(title__icontains=query) | Q(content__icontains=query) # this is where we search for the query
         qs = self.is_public().filter(lookup)
         if user is not None:
             qs2 = self.filter(user=user).filter(lookup)
@@ -66,6 +66,7 @@ class Product(models.Model):
 #    def __str__(self):
 #        return self.title
 
+    # Tags assigning random here
     def get_tag_list(self):
         return [random.choice(TAGS_MODEL_VALUES)]
 

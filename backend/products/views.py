@@ -33,7 +33,7 @@ class ProductListCreateAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, ge
     def perform_create(self, serializer):
 #        email = serializer.validated_data.pop('email')
         #serializer.save(user=self.request.user) I could do that if I had One To Many relationship with it
-        print(serializer.validated_data)
+        # print(serializer.validated_data)
         title = serializer.validated_data.get('title')
         content = serializer.validated_data.get('content') or None
         if content is None:
@@ -90,14 +90,13 @@ class ProductMixinView(
 #    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def get(self, request, *args, **kwargs):
-        print(args, kwargs)
+        # print(args, kwargs)
         pk = kwargs.get('pk')
         if pk is not None:
             return self.retrieve(request, *args, **kwargs)
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        #pass
         return self.create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
@@ -108,14 +107,7 @@ class ProductMixinView(
         serializer.save(content=content)
 
 ### Duuuuuude I have to learn everything about these mixins, cuz they are amazing!!!!!!!!!!!!!!!
-
-
-
-
-
-
-
-
+# --- f*** off bro I don't have a time.
 
 
 @api_view(["GET", "POST"])
