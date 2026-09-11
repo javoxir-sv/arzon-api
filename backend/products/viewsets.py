@@ -13,7 +13,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     '''
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'
 
 
 
@@ -29,4 +29,4 @@ class ProductGenericViewSet(          # SO IT ONLY PROVIDES 2 ENDPOINT OR WHATEV
     '''
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'

@@ -5,7 +5,7 @@ from rest_framework import serializers
 class UserPublicInlineSerializer(serializers.Serializer):
     url = serializers.HyperlinkedIdentityField( #that's the easiest way to do it, believe me
         view_name='product-detail',
-        lookup_field = 'pk',
+        lookup_field = 'slug',
         read_only=True,
     )
     title = serializers.CharField(read_only=True)

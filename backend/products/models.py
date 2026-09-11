@@ -1,24 +1,15 @@
-import random
-
+from django.utils.text import slugify
 from django.db import models
 from django.conf import settings
 from django.db.models import Q
-
-
 User = settings.AUTH_USER_MODEL
-
-
-# product tags 
-TAGS_MODEL_VALUES = ['cars', 'boats', 'milks', 'girls', 'water']
+from stores.models import Store
 
 
 class ProductQuerySet(models.QuerySet):
-    def is_public(self):
-        return self.filter(public=True)
-
     def search(self, query, user=None):
-        lookup = Q(title__icontains=query) | Q(content__icontains=query) # this is where we search for the query
-        qs = self.is_public().filter(lookup)
+        lookup = Q(title__icontains=query) | Q(description__icontains=query) # this is where we search for the query
+        qs = self.filter(lookup)
         if user is not None:
             qs2 = self.filter(user=user).filter(lookup)
             qs = (qs | qs2).distinct()
@@ -28,25 +19,35 @@ class ProductManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
         return ProductQuerySet(self.model, using=self._db)
 
-
     def search(self, query, user=None):
         return self.get_queryset().search(query, user=user)
 
 
 
-
-
 class Product(models.Model):
-    user = models.ForeignKey(User, default=1, null=True, on_delete=models.SET_NULL)
-    title = models.CharField(max_length=200)
-    content = models.TextField(null=True, blank=True)
-    price = models.DecimalField(max_digits=15, decimal_places=2, default=99.99)
-    public = models.BooleanField(default=True)
+    store = models.ForeignKey(Store, null=True, blank=True, on_delete=models.CASCADE)
+    title = models.CharField(max_length=150, blank=False, null=False)
+    description = models.TextField(max_length=500, blank=True, null=True)
+    price = models.DecimalField(max_digits=15, decimal_places=2, null=False)
+    sale_price = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    is_discount = models.BooleanField(null=False, blank=False, default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    is_available = models.BooleanField(null=False, blank=False, default=True)
+    image_url = models.URLField(blank=True, null=True)
+    slug = models.SlugField(unique=True, blank=True)
 
     objects = ProductManager()
 
+    def __str__(self):
+        return f"ID:{self.pk} | ST:{self.store} - {self.title}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
-        return f"/products/{self.pk}/"
+        return f"/products/{self.slug}/"
 
     @property
     def url(self):
@@ -54,29 +55,9 @@ class Product(models.Model):
 
     @property
     def path(self):
-        return f"/products/{self.pk}"
+        return f"/products/{self.slug}"
 
     @property
     def body(self):
-        return self.content
-
-    def is_public(self) -> bool:
-        return self.public
-
-#    def __str__(self):
-#        return self.title
-
-    # Tags assigning random here
-    def get_tag_list(self):
-        return [random.choice(TAGS_MODEL_VALUES)]
-
-    @property
-    def sale_price(self):
-        return "%.2f" %(float(self.price) * 0.8)
-
-    def get_discount(self):
-        return "12324"
-
-    def __str__(self):
-        return f"ID:{self.pk} | {self.title}"
+        return self.description
 

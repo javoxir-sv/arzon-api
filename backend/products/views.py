@@ -13,15 +13,16 @@ from .serializers import ProductSerializer
 
 
 
-class ProductDetailAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, generics.RetrieveAPIView):
+class ProductDetailAPIView(generics.RetrieveAPIView): #UserQuerySetMixin, StaffEditorPermissionMixin, 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field = 'slug'
 
     #authentication_classes = [authentication.SessionAuthentication]   ##that's how we keep going/adding persmissions, we are not editing permissions
     #permission_classes = [permissions.DjangoModelPermissions]    ## we are just putting restrictions to users who already has defined permissions
 
 
-class ProductListCreateAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, generics.ListCreateAPIView):
+class ProductListCreateAPIView(generics.ListCreateAPIView): #UserQuerySetMixin, StaffEditorPermissionMixin, 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     '''authentication_classes = [           WE DON'T NEED THEM SINCE WE SET IT UP IN SETTINGS.PY
@@ -35,11 +36,11 @@ class ProductListCreateAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, ge
         #serializer.save(user=self.request.user) I could do that if I had One To Many relationship with it
         # print(serializer.validated_data)
         title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if content is None:
-            content = title
+        description = serializer.validated_data.get('description') or None
+        if description is None:
+            description = title
 
-        serializer.save(user=self.request.user, content=content)
+        serializer.save(store=self.request.store, description=description)
 
 #    def get_queryset(self):
 #        qs = super().get_queryset()
@@ -49,24 +50,23 @@ class ProductListCreateAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, ge
 
 
 
-
-class ProductUpdateAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, generics.UpdateAPIView):
+class ProductUpdateAPIView(generics.UpdateAPIView): # #UserQuerySetMixin, StaffEditorPermissionMixin, 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'
 #    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     
 
     def perform_update(self, serializer):
         instance = serializer.save()
-        if not instance.content:
-            instance.content = instance.title
+        if not instance.description:
+            instance.description = instance.title
 
 
-class ProductDeleteAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, generics.DestroyAPIView):
+class ProductDeleteAPIView(generics.DestroyAPIView):  #UserQuerySetMixin, StaffEditorPermissionMixin, 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'  # it's already default we don't even need this
+    lookup_field = 'slug'  # it's already default we don't even need this
 #    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
 #Just repeating the deault stuff:
@@ -77,8 +77,8 @@ class ProductDeleteAPIView(UserQuerySetMixin, StaffEditorPermissionMixin, generi
 
 
 class ProductMixinView(
-                        UserQuerySetMixin, 
-                        StaffEditorPermissionMixin,
+                        # UserQuerySetMixin, 
+                        # StaffEditorPermissionMixin,
                         mixins.CreateModelMixin,
                         mixins.RetrieveModelMixin,
                         mixins.ListModelMixin, 
@@ -86,13 +86,13 @@ class ProductMixinView(
                         ):                            # We can out the mixing straight up before it, that's why it's called mixin
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    lookup_field = 'pk'
+    lookup_field = 'slug'
 #    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     def get(self, request, *args, **kwargs):
         # print(args, kwargs)
-        pk = kwargs.get('pk')
-        if pk is not None:
+        slug = kwargs.get('slug')
+        if slug is not None:
             return self.retrieve(request, *args, **kwargs)
         return self.list(request, *args, **kwargs)
 
@@ -101,23 +101,23 @@ class ProductMixinView(
 
     def perform_create(self, serializer):
         title = serializer.validated_data.get('title')
-        content = serializer.validated_data.get('content') or None
-        if content is None:
-            content = "Ohhhhhhh yeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaaaaaaaaaaa"
-        serializer.save(content=content)
+        description = serializer.validated_data.get('description') or None
+        if description is None:
+            description = "Ohhhhhhh yeeeeeeeeeeeeeeeeaaaaaaaaaaaaaaaaaaaaaaaaa"
+        serializer.save(description=description)
 
 ### Duuuuuude I have to learn everything about these mixins, cuz they are amazing!!!!!!!!!!!!!!!
 # --- f*** off bro I don't have a time.
 
 
 @api_view(["GET", "POST"])
-def product_alt_view(request, pk=None):
+def product_alt_view(request, slug=None):
 
     method = request.method
 
     if method == 'GET':
-        if pk is not None:
-            obj = get_object_or_404(Product, pk=pk)
+        if slug is not None:
+            obj = get_object_or_404(Product, slug=slug)
             data = ProductSerializer(obj, many=False).data
 
             return Response(data)
@@ -133,10 +133,10 @@ def product_alt_view(request, pk=None):
         serializer = ProductSerializer(data = request.data)
         if serializer.is_valid(raise_exception=True):
             title = serializer.validated_data.get('title')
-            content = serializer.validated_data.get('content') or None
-            if content is None:
-                content = title
+            description = serializer.validated_data.get('description') or None
+            if description is None:
+                description = title
 
-            serializer.save(content=content)
+            serializer.save(description=description)
             return Response(serializer.data)
         return Response({"invalid" : "not good data here"}, status=400)

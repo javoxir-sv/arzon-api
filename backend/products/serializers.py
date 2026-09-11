@@ -8,7 +8,7 @@ from api.serializers import UserPublicSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    owner = UserPublicSerializer(source='user', read_only=True)
+    # owner = UserPublicSerializer(source='user', read_only=True)
 
 #    related_products = ProductInlineSerializer(source='user.product_set.all', read_only=True, many=True)
 #    my_discount = serializers.SerializerMethodField(read_only=True)
@@ -17,43 +17,50 @@ class ProductSerializer(serializers.ModelSerializer):
 
     url = serializers.HyperlinkedIdentityField( #that's the easiest way to do it, believe me
         view_name='product-detail',
-        lookup_field = 'pk',
+        lookup_field = 'slug',
     )
     title = serializers.CharField(validators=[validate_title_no_hello, unique_product_title])
 #    name = serializers.CharField(source='title', read_only=True)
 #    email = serializers.EmailField(write_only=True)
 
-    body = serializers.CharField(source='content')   #links the body up with content so we can update it too
+    # body = serializers.CharField(source='content')   #links the body up with content so we can update it too
     class Meta:
         model = Product
         fields = [
-            'owner',
+            # 'store',
+            'title',
             'pk',
             'url',
             'edit_url',
-            'title',
-            'body',
+            'description',
             'price',
+            'is_discount',
             'sale_price',
-            'public',
+            'is_available',
+            'created_at',
+            'image_url',
             'path',
-            'url',
+            'slug',
         ]
 
 
-    def get_my_discount(self, obj):
-        return obj.get_discount()
+    # def get_my_discount(self, obj):
+    #     return obj.get_discount()
 
     def validate_title(self, value):
         request = self.context.get('request')
-        user = request.user
-        qs = Product.objects.filter(user=user, title__iexact=value)
+        store = request.store
+        qs = Product.objects.filter(store=store, title__iexact=value)
         if qs.exists():
             raise serializers.ValidationError(f"{value} is already a product name.")
         return value
 
+    def get_edit_url(self, obj):
+        request = self.context.get('request')
 
-
+        if request is None:
+            return None
+        return reverse("product-edit", kwargs={"slug":obj.slug}, request=request)
 
 
 
@@ -71,11 +78,5 @@ class ProductSerializer(serializers.ModelSerializer):
 #        return super().update(instance, validated_data)    #instance
 
 
-    def get_edit_url(self, obj):
-        request = self.context.get('request')
-
-        if request is None:
-            return None
-        return reverse("product-edit", kwargs={"pk":obj.pk}, request=request)
 
 

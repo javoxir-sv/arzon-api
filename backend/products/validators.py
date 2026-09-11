@@ -12,9 +12,11 @@ def validate_title(value):
 
 
 def validate_title_no_hello(value):
-    if "hello" in value.lower():
-        raise serializers.ValidationError("Hello is not allowed.")
-    return value
+    suckers  = ['suck', 'fuck', 'sex', 'mexroj', 'niggggg', 'nigga']
+    for word in suckers:
+        if word in value.lower():
+            raise serializers.ValidationError(f"{word} is not allowed you fucker.")
+        return value
 
 
 unique_product_title = UniqueValidator(queryset=Product.objects.all(), lookup='iexact')

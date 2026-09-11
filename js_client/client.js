@@ -156,7 +156,7 @@ validateJWTToken()
 const searchClient = algoliasearch('R2HGNQ9JXO', '6c2ecec028bb4e02c35ec302232f26cb');
 
 const search = instantsearch({
-  indexName: 'gogo_Product',
+  indexName: 'arzon_Product',
   searchClient,
 });
 
@@ -172,11 +172,11 @@ search.addWidgets([
 
   instantsearch.widgets.refinementList({
       container: "#user-list",
-      attribute: 'user'
+      attribute: 'store'
   }),
   instantsearch.widgets.refinementList({
     container: "#public-list",
-    attribute: 'public'
+    attribute: 'is_available'
 }),
 
 
@@ -186,9 +186,9 @@ search.addWidgets([
         item: `
             <div>
                 <div>{{#helpers.highlight}}{ "attribute": "title" }{{/helpers.highlight}}</div>
-                <div>{{#helpers.highlight}}{ "attribute": "body" }{{/helpers.highlight}}</div>
+                <div>{{#helpers.highlight}}{ "attribute": "description" }{{/helpers.highlight}}</div>
                 
-                <p>{{ user }}</p><p>\${{ price }}
+                <p>{{ store }}</p><p>\${{ price }}
             
             
             </div>`

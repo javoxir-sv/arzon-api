@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/products/', include('products.urls')),
     path('api/v2/', include('cfehome.routers')),
     path('search/', include('search.urls')),
+    path('stores/', include('stores.urls'))
 ]

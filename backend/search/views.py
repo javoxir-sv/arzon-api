@@ -13,29 +13,29 @@ class SearchListView(generics.GenericAPIView):
         if request.user.is_authenticated:
             user = request.user.username
         query = request.GET.get('query') or request.GET.get('q')
-        public = str(request.GET.get('public')) != "0"
-        tag = request.GET.get('tags') or None
+        # public = str(request.GET.get('public')) != "0"
+        # tag = request.GET.get('tags') or None
 
         if not query:
             return Response("", status=400)
-        results = client.perform_search(query, tags=tag, user=user, public=public)
+        results = client.perform_search(query, user=user) # , public=public, tags=tag
         return Response(results)
 
 
 
 # basically deprecateed
-class OldSearchListView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        q = self.request.GET.get('q')
-        results = Product.objects.none()
-        if q is not None:
-            user = None                       #user = self.request.user or None
-            if self.request.user.is_authenticated:
-                user = self.request.user
-            results = qs.search(q, user=user)
-        return results
-    
+# class OldSearchListView(generics.ListAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#
+#     def get_queryset(self, *args, **kwargs):
+#         qs = super().get_queryset(*args, **kwargs)
+#         q = self.request.GET.get('q')
+#         results = Product.objects.none()
+#         if q is not None:
+#             user = None                       #user = self.request.user or None
+#             if self.request.user.is_authenticated:
+#                 user = self.request.user
+#             results = qs.search(q, user=user)
+#         return results
+#     
