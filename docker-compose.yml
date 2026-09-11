@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: drf_postgres_db
+    environment:
+      POSTGRES_DB: cfehome_db
+      POSTGRES_USER: cfehome_user
+      POSTGRES_PASSWORD: cfehome_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cfehome_user -d cfehome_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: drf_backend_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=cfehome_db
+      - DB_USER=cfehome_user
+      - DB_PASSWORD=cfehome_password
+      - DB_HOST=db
+      - DB_PORT=5432
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
