@@ -40,6 +40,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=250, unique=True, blank=True)
     created_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     tags = ArrayField(models.CharField(max_length=50), default=list, blank=True)
+    url_origin = models.URLField(blank=True, null=True)
     
     # created_at = models.DateTimeField(auto_now=True)
     objects = ProductManager()

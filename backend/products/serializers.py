@@ -14,7 +14,7 @@ class ProductSerializer(serializers.ModelSerializer):
 #    my_discount = serializers.SerializerMethodField(read_only=True)
 
     tags = serializers.ListField(child=serializers.CharField(max_length=50), required=False)
-    edit_url = serializers.SerializerMethodField(read_only=True)
+    # edit_url = serializers.SerializerMethodField(read_only=True)
 
     url = serializers.HyperlinkedIdentityField( #that's the easiest way to do it, believe me
         view_name='product-detail',
@@ -45,7 +45,8 @@ class ProductSerializer(serializers.ModelSerializer):
             # some mo're
             'pk',
             'url',
-            'edit_url',
+            'url_origin',
+            # 'edit_url',
             'path',
         ]
 
@@ -61,12 +62,12 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(f"{value} is already a product name.")
         return value
 
-    def get_edit_url(self, obj):
-        request = self.context.get('request')
-
-        if request is None:
-            return None
-        return reverse("product-edit", kwargs={"slug":obj.slug}, request=request)
+    # def get_edit_url(self, obj):
+    #     request = self.context.get('request')
+    #
+    #     if request is None:
+    #         return None
+    #     return reverse("product-edit", kwargs={"slug":obj.slug}, request=request)
 
 
 
