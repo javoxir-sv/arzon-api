@@ -13,6 +13,7 @@ class ProductSerializer(serializers.ModelSerializer):
 #    related_products = ProductInlineSerializer(source='user.product_set.all', read_only=True, many=True)
 #    my_discount = serializers.SerializerMethodField(read_only=True)
 
+    tags = serializers.ListField(child=serializers.CharField(max_length=50), required=False)
     edit_url = serializers.SerializerMethodField(read_only=True)
 
     url = serializers.HyperlinkedIdentityField( #that's the easiest way to do it, believe me
@@ -27,20 +28,25 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            # 'store',
+            'store',
             'title',
+            'description',
+            'price',
+            'sale_price',
+            'on_sale',
+            'sale_begin',
+            'sale_end',
+            'is_available',
+            'image_url',
+            'slug',
+            'created_at',
+            'tags',
+
+            # some mo're
             'pk',
             'url',
             'edit_url',
-            'description',
-            'price',
-            'is_discount',
-            'sale_price',
-            'is_available',
-            'created_at',
-            'image_url',
             'path',
-            'slug',
         ]
 
 

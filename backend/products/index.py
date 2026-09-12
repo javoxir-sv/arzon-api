@@ -6,22 +6,24 @@ from .models import Product
 @register(Product)
 class ProductIndex(AlgoliaIndex):
     fields = [
-        'title',
-        'description',
-        'price',
-        'sale_price',
-        'created_at',
-        'image_url',
-        'store',
-        'is_available',
-        'is_discount',
-        'path',
-        'url',
-        'slug',
+            'store',
+            'title',
+            'description',
+            'price',
+            'sale_price',
+            'on_sale',
+            'sale_begin',
+            'sale_end',
+            'is_available',
+            'image_url',
+            'slug',
+            'created_at',
+            'tags',
     ]
 
     settings = {
         'searchableAttributes':['title', 'description'],
-        'attributesForFaceting': ['store',],
+        'attributesForFaceting': ['store','is_available'],
     }
+    # index_name = 'arzon_products'
 

@@ -1,4 +1,6 @@
+from django.contrib.postgres.fields import ArrayField
 from django.utils.text import slugify
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.db.models import Q
@@ -26,16 +28,20 @@ class ProductManager(models.Manager):
 
 class Product(models.Model):
     store = models.ForeignKey(Store, null=True, blank=True, on_delete=models.CASCADE)
-    title = models.CharField(max_length=150, blank=False, null=False)
+    title = models.CharField(max_length=200, blank=False, null=False)
     description = models.TextField(max_length=500, blank=True, null=True)
     price = models.DecimalField(max_digits=15, decimal_places=2, null=False)
     sale_price = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    is_discount = models.BooleanField(null=False, blank=False, default=False)
-    created_at = models.DateTimeField(auto_now=True)
+    on_sale = models.BooleanField(null=False, blank=False, default=False)
+    sale_begin = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    sale_end = models.DateTimeField(default=timezone.now, null=True, blank=True)
     is_available = models.BooleanField(null=False, blank=False, default=True)
     image_url = models.URLField(blank=True, null=True)
-    slug = models.SlugField(unique=True, blank=True)
-
+    slug = models.SlugField(max_length=250, unique=True, blank=True)
+    created_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    tags = ArrayField(models.CharField(max_length=50), default=list, blank=True)
+    
+    # created_at = models.DateTimeField(auto_now=True)
     objects = ProductManager()
 
     def __str__(self):
