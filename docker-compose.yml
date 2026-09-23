@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cfehome_user -d cfehome_db"]
+      test: ["CMD-SHELL", "pg_isready -U arzon_user -d arzon_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -31,8 +31,9 @@ services:
     build: .
     container_name: drf_backend_web
     restart: unless-stopped
-    command: gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    command: gunicorn cfehome.wsgi:application --bind 0.0.0.0:8000 --workers 3
     volumes:
+      - ./backend:/app/backend
       - static_volume:/app/backend/staticfiles
       - media_volume:/app/backend/media
     ports:

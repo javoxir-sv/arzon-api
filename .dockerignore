@@ -1,4 +1,5 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -6,5 +7,9 @@ __pycache__/
 .git/
 .gitignore
 backend/db.sqlite3
-
-
+*.sqlite3
+.git/
+.gitignore
+.env
+js_client/
+py_client/

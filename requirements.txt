@@ -8,3 +8,4 @@ django-cors-headers
 python-dotenv
 psycopg2-binary>=2.9.0
 gunicorn
+whitenoise
