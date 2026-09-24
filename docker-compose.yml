@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:16-alpine
@@ -11,8 +9,10 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:9980:8000"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U arzon_user -d arzon_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_NAME} -d ${DB_USER}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -32,18 +32,17 @@ services:
     container_name: drf_backend_web
     restart: unless-stopped
     command: gunicorn cfehome.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    network_mode: "service:db"
     volumes:
       - ./backend:/app/backend
       - static_volume:/app/backend/staticfiles
       - media_volume:/app/backend/media
-    ports:
-      - "127.0.0.1:9090:8000"
     environment:
       - DB_ENGINE=django.db.backends.postgresql
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - DB_HOST=db
+      - DB_HOST=127.0.0.1
       - DB_PORT=5432
     env_file: .env
     depends_on:
